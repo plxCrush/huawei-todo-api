@@ -3,16 +3,18 @@ package com.huawei.todo.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "todolists")
+@Table(name = "todoLists")
 @NoArgsConstructor
 public class TodoList extends BasicObject {
 
     @Column(nullable = false)
     String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", updatable = false, nullable = false)
+    User user;
 }

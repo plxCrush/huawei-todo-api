@@ -22,15 +22,6 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         logger.info("Running database seeder...");
 
-        User emre = userService.get("emre");
-        if (emre == null) {
-            emre = new User();
-            emre.setName("Emre Gönen");
-            emre.setUsername("emre.gonen");
-            emre.hashPassword("123");
-            userService.save(emre);
-        }
-
         User huawei = userService.get("huawei");
         if (huawei == null) {
             huawei = new User();
@@ -38,6 +29,15 @@ public class DatabaseSeeder implements CommandLineRunner {
             huawei.setUsername("huawei");
             huawei.hashPassword("huawei");
             userService.save(huawei);
+        }
+
+        User emre = userService.get("emre.gonen");
+        if (emre == null) {
+            emre = new User();
+            emre.setName("Emre Gönen");
+            emre.setUsername("emre.gonen");
+            emre.hashPassword("123");
+            userService.save(emre);
         }
 
     }

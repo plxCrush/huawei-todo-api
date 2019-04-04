@@ -12,9 +12,10 @@ public enum ApiErrorMessage {
     USERNAME_ALREADY_EXISTS("This username already exists."),
     INVALID_USERNAME_OR_PASSWORD("Invalid username or password."),
     USERNAME_CANT_CONTAIN_FORBIDDEN_CHARACTERS("Username cannot contain forbidden characters."),
-    PASSWORD_DOES_NOT_MATCH_REPEAT("Password does not match repeat");
+    PASSWORD_DOES_NOT_MATCH_REPEAT("Password does not match repeat"),
 
     // Misc...
+    USER_NOT_FOUND("User not found.");
 
     String text;
 

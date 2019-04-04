@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,6 +30,9 @@ public class User extends BasicObject {
     @JsonIgnore
     @Column(nullable = false)
     String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<TodoList> todoLists = new ArrayList<>();
 
     public boolean verifyPassword(String password) {
 

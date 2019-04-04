@@ -1,49 +1,80 @@
 package com.huawei.todo.controllers;
 
 import com.huawei.todo.Application;
+import com.huawei.todo.controllers.exceptions.ApiErrorMessage;
+import com.huawei.todo.controllers.exceptions.ApiException;
+import com.huawei.todo.controllers.exceptions.ApiValidationException;
+import com.huawei.todo.dtos.TodoListDTO;
 import com.huawei.todo.models.TodoList;
+import com.huawei.todo.models.User;
+import com.huawei.todo.security.JwtUser;
 import com.huawei.todo.services.TodoListService;
+import com.huawei.todo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todo-lists")
+@RequestMapping("/api/todo-lists")
 public class TodoListController {
 
-    static final Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-    @Autowired
-    TodoListService todoListService;
+    private final TodoListService todoListService;
+    private final UserService userService;
+
+    public TodoListController(TodoListService todoListService, UserService userService) {
+        this.todoListService = todoListService;
+        this.userService = userService;
+    }
+
+    //TODO: Add list with filtering & sorting options.
 
     @GetMapping("all")
     public ResponseEntity all() {
 
         logger.info("find all todo lists...");
-        List todoLists = todoListService.getAll();
-        return ResponseEntity.ok(todoLists);
+        List<TodoList> todoLists = todoListService.getAll();
+        return ResponseEntity.ok(
+                todoLists.stream()
+                .map(TodoListDTO::new)
+                .toArray()
+        );
     }
 
     @GetMapping("{id}")
     public ResponseEntity get(@PathVariable long id) {
 
         TodoList todoList = todoListService.get(id);
-        return ResponseEntity.ok(todoList);
+        return ResponseEntity.ok(new TodoListDTO(todoList));
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody TodoList todoListDto) {
+    public ResponseEntity create(@Valid @RequestBody TodoListDTO dto, Errors errors, Authentication authentication) throws ApiException {
+
+        if (errors.hasErrors()) {
+            throw new ApiValidationException(errors);
+        }
+
+        JwtUser principal = (JwtUser) authentication.getPrincipal();
+        User user = userService.get(principal.getUsername());
+        if (user == null) {
+            throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
+        }
 
         TodoList todoList = new TodoList();
-        todoList.setName(todoListDto.getName());
+        todoList.setUser(user);
+        todoList.setName(dto.getName());
         todoList = todoListService.save(todoList);
 
-        return ResponseEntity.ok(todoList);
+        return ResponseEntity.ok(new TodoListDTO(todoList));
     }
 
     @DeleteMapping("{id}")

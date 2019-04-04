@@ -8,7 +8,6 @@ import com.huawei.todo.dtos.SignUpRequest;
 import com.huawei.todo.models.User;
 import com.huawei.todo.security.*;
 import com.huawei.todo.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,18 +25,17 @@ import java.util.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private JwtAuthenticationManager authenticationManager;
+    private final JwtAuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+    private final UserService userService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    @Qualifier("jwtUserDetailsService")
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    UserService userService;
+    public AuthController(JwtAuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, @Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService, UserService userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+    }
 
     @PostMapping("signup")
     public ResponseEntity signup(@Valid @RequestBody SignUpRequest signUpRequest, Errors errors) throws ApiException {
