@@ -28,4 +28,14 @@ public class User extends BasicObject {
     @JsonIgnore
     @Column(nullable = false)
     String password;
+
+    public boolean verifyPassword(String password) {
+
+        return passwordEncoder.matches(password, this.password);
+    }
+
+    public void hashPassword(String password) {
+
+        this.password = passwordEncoder.encode(password);
+    }
 }
