@@ -15,6 +15,7 @@ public enum ApiErrorMessage {
     PASSWORD_DOES_NOT_MATCH_REPEAT("Password does not match repeat"),
 
     // Misc...
+    TODOLIST_NOT_FOUND("Todo list not found."),
     USER_NOT_FOUND("User not found.");
 
     String text;

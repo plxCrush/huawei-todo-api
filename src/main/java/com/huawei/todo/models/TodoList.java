@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -17,4 +19,7 @@ public class TodoList extends BasicObject {
     @ManyToOne
     @JoinColumn(name = "user_id", updatable = false, nullable = false)
     User user;
+
+    @OneToMany(mappedBy = "todoList", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<TodoItem> todoItems = new ArrayList<>();
 }
