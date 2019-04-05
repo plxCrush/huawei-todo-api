@@ -35,8 +35,6 @@ public class TodoListController {
         this.userService = userService;
     }
 
-    //TODO: Add list with filtering & sorting options.
-
     @GetMapping("all")
     public ResponseEntity all() {
 

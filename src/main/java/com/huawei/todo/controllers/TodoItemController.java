@@ -5,6 +5,7 @@ import com.huawei.todo.controllers.exceptions.ApiErrorMessage;
 import com.huawei.todo.controllers.exceptions.ApiException;
 import com.huawei.todo.controllers.exceptions.ApiValidationException;
 import com.huawei.todo.dtos.TodoItemDTO;
+import com.huawei.todo.dtos.TodoItemFilter;
 import com.huawei.todo.models.TodoItem;
 import com.huawei.todo.models.TodoList;
 import com.huawei.todo.models.User;
@@ -39,10 +40,50 @@ public class TodoItemController {
         this.userService = userService;
     }
 
+    private User checkUser(Authentication authentication) throws ApiException {
+
+        JwtUser principal = (JwtUser) authentication.getPrincipal();
+        User user = userService.get(principal.getUsername());
+        if (user == null) {
+            throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
+        } else {
+            return user;
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity list(@RequestBody TodoItemFilter filter, Authentication authentication) throws ApiException {
+
+        System.out.println("todo list id: " + filter.getTodoListId());
+        System.out.println("keyword: " + filter.getKeyword());
+
+        if (filter.getTodoListId() == null) {
+            throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
+        }
+
+        TodoList todoList = todoListService.get(filter.getTodoListId());
+
+        if (todoList == null) {
+            throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
+        }
+
+        User user = this.checkUser(authentication);
+
+        if (user.getId() != todoList.getUser().getId()) {
+            throw new ApiException(ApiErrorMessage.NOT_YOUR_TODOLIST);
+        }
+
+        List<TodoItem> todoItems = todoItemService.search(filter);
+        return ResponseEntity.ok(
+                todoItems.stream()
+                        .map(TodoItemDTO::new)
+                        .toArray()
+        );
+    }
+
     @GetMapping("all")
     public ResponseEntity all() {
 
-        logger.info("find all todo lists...");
         List<TodoItem> todoItems = todoItemService.getAll();
         return ResponseEntity.ok(
                 todoItems.stream()
@@ -70,11 +111,7 @@ public class TodoItemController {
             throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
         }
 
-        JwtUser principal = (JwtUser) authentication.getPrincipal();
-        User user = userService.get(principal.getUsername());
-        if (user == null) {
-            throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
-        }
+        User user = this.checkUser(authentication);
 
         TodoItem todoItem = new TodoItem();
         todoItem.setTodoList(todoList);

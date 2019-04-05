@@ -16,7 +16,8 @@ public enum ApiErrorMessage {
 
     // Misc...
     TODOLIST_NOT_FOUND("Todo list not found."),
-    USER_NOT_FOUND("User not found.");
+    USER_NOT_FOUND("User not found."),
+    NOT_YOUR_TODOLIST("Not authorized");
 
     String text;
 

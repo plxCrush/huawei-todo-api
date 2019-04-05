@@ -20,6 +20,9 @@ public class TodoItem extends BasicObject {
     Date deadline;
 
     @Column(nullable = false)
+    Date createdAt = new Date();
+
+    @Column(nullable = false)
     boolean completed = false;
 
     @ManyToOne
