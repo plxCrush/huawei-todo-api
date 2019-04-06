@@ -52,7 +52,7 @@ public class TodoItemController {
     }
 
     @GetMapping
-    public ResponseEntity list(@RequestBody TodoItemFilter filter, Authentication authentication) throws ApiException {
+    public ResponseEntity list(TodoItemFilter filter, Authentication authentication) throws ApiException {
 
         if (filter.getTodoListId() == null) {
             throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);

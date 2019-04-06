@@ -37,7 +37,7 @@ public class TodoListController {
     }
 
     @GetMapping
-    public ResponseEntity list(@RequestBody TodoListFilter filter, Authentication authentication) throws ApiException {
+    public ResponseEntity list(TodoListFilter filter, Authentication authentication) throws ApiException {
 
         JwtUser principal = (JwtUser) authentication.getPrincipal();
         User user = userService.get(principal.getUsername());
@@ -83,11 +83,34 @@ public class TodoListController {
         return ResponseEntity.ok(new TodoListDTO(todoList));
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity update(@Valid @RequestBody TodoListDTO dto, @PathVariable long id, Errors errors, Authentication authentication) throws ApiException {
+
+        if (errors.hasErrors()) {
+            throw new ApiValidationException(errors);
+        }
+
+        TodoList todoList = todoListService.get(id);
+        if (todoList == null) {
+            throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
+        }
+
+        JwtUser principal = (JwtUser) authentication.getPrincipal();
+        User user = userService.get(principal.getUsername());
+        if (user == null) {
+            throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
+        }
+
+        todoList.setName(dto.getName());
+        todoList = todoListService.save(todoList);
+
+        return ResponseEntity.ok(new TodoListDTO(todoList));
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity delete(@PathVariable long id) {
 
         TodoList todoList = todoListService.get(id);
-
         todoListService.delete(todoList);
         return new ResponseEntity(HttpStatus.OK);
     }
