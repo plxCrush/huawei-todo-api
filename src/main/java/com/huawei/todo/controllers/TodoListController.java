@@ -35,11 +35,16 @@ public class TodoListController {
         this.userService = userService;
     }
 
-    @GetMapping("all")
-    public ResponseEntity all() {
+    @GetMapping
+    public ResponseEntity all(Authentication authentication) throws ApiException {
 
-        logger.info("find all todo lists...");
-        List<TodoList> todoLists = todoListService.getAll();
+        JwtUser principal = (JwtUser) authentication.getPrincipal();
+        User user = userService.get(principal.getUsername());
+        if (user == null) {
+            throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
+        }
+
+        List<TodoList> todoLists = todoListService.listByUser(user.getId());
         return ResponseEntity.ok(
                 todoLists.stream()
                 .map(TodoListDTO::new)
