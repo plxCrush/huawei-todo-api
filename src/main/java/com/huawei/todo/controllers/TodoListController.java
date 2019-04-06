@@ -5,6 +5,7 @@ import com.huawei.todo.controllers.exceptions.ApiErrorMessage;
 import com.huawei.todo.controllers.exceptions.ApiException;
 import com.huawei.todo.controllers.exceptions.ApiValidationException;
 import com.huawei.todo.dtos.TodoListDTO;
+import com.huawei.todo.dtos.TodoListFilter;
 import com.huawei.todo.models.TodoList;
 import com.huawei.todo.models.User;
 import com.huawei.todo.security.JwtUser;
@@ -36,7 +37,7 @@ public class TodoListController {
     }
 
     @GetMapping
-    public ResponseEntity all(Authentication authentication) throws ApiException {
+    public ResponseEntity list(@RequestBody TodoListFilter filter, Authentication authentication) throws ApiException {
 
         JwtUser principal = (JwtUser) authentication.getPrincipal();
         User user = userService.get(principal.getUsername());
@@ -44,7 +45,9 @@ public class TodoListController {
             throw new ApiException(ApiErrorMessage.USER_NOT_FOUND);
         }
 
-        List<TodoList> todoLists = todoListService.listByUser(user.getId());
+        filter.setUserId(user.getId());
+
+        List<TodoList> todoLists = todoListService.search(filter);
         return ResponseEntity.ok(
                 todoLists.stream()
                 .map(TodoListDTO::new)

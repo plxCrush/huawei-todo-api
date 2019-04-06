@@ -54,9 +54,6 @@ public class TodoItemController {
     @GetMapping
     public ResponseEntity list(@RequestBody TodoItemFilter filter, Authentication authentication) throws ApiException {
 
-        System.out.println("todo list id: " + filter.getTodoListId());
-        System.out.println("keyword: " + filter.getKeyword());
-
         if (filter.getTodoListId() == null) {
             throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
         }
