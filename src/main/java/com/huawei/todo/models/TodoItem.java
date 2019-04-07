@@ -37,4 +37,10 @@ public class TodoItem extends BasicObject {
             inverseJoinColumns = @JoinColumn(name = "dependency_id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"todoItem_id", "dependency_id"}))
     List<TodoItem> dependencies = new ArrayList<>();
+
+    public boolean isExpired() {
+        return !this.completed &&
+                (this.deadline != null && this.deadline.compareTo(new Date()) < 0);
+    }
+
 }

@@ -22,7 +22,11 @@ public class TodoItemDTO extends BasicObjectDTO {
 
     Date deadline;
 
+    Date createdAt;
+
     Boolean completed;
+
+    Boolean expired;
 
     @NotNull(message = "Todo list id cannot be blank.")
     long todoListId;
@@ -38,6 +42,8 @@ public class TodoItemDTO extends BasicObjectDTO {
         this.description = todoItem.getDescription();
         this.deadline = todoItem.getDeadline();
         this.completed = todoItem.isCompleted();
+        this.createdAt = todoItem.getCreatedAt();
+        this.expired = todoItem.isExpired();
 
         TodoList todoList = todoItem.getTodoList();
         this.todoListId = todoList.getId();
