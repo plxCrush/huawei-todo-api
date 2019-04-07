@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +29,8 @@ public class TodoItemDTO extends BasicObjectDTO {
 
     String todoListName;
 
+    List<TodoItemDependencyDTO> dependencies;
+
     public TodoItemDTO(TodoItem todoItem) {
 
         super(todoItem);
@@ -38,5 +42,10 @@ public class TodoItemDTO extends BasicObjectDTO {
         TodoList todoList = todoItem.getTodoList();
         this.todoListId = todoList.getId();
         this.todoListName = todoList.getName();
+
+        this.dependencies = todoItem.getDependencies()
+                .stream()
+                .map(TodoItemDependencyDTO::new)
+                .collect(Collectors.toList());
     }
 }

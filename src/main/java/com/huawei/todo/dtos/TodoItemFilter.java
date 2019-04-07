@@ -15,7 +15,7 @@ public class TodoItemFilter {
 
     Boolean expired;
 
-    String orderBy;
+    String sortBy;
 
-    String orderDirection;
+    String sortDirection;
 }
