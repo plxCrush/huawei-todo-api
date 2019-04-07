@@ -63,20 +63,20 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
                 }
             }
 
-//            Expression expression;
-//            if (filter.getSortBy() != null) {
-//                expression = root.get(filter.getSortBy());
-//            } else {
-//                expression = root.get("name");
-//            }
-//            Order order;
-//            if (filter.getSortDirection().equals("ASC")) {
-//                order = cb.asc(expression);
-//            } else {
-//                order = cb.desc(expression);
-//            }
-//
-//            query.orderBy(order);
+            Expression expression;
+            if (filter.getSortBy() != null) {
+                expression = root.get(filter.getSortBy());
+            } else {
+                expression = root.get("name");
+            }
+            Order order;
+            if (filter.getSortDirection() != null && filter.getSortDirection().equals("DESC")) {
+                order = cb.desc(expression);
+            } else {
+                order = cb.asc(expression);
+            }
+
+            query.orderBy(order);
             return cb.and(predicates.toArray(new Predicate[] {}));
         };
     }
