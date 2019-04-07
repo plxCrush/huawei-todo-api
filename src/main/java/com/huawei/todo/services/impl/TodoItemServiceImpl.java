@@ -37,7 +37,7 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
 
             List<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(cb.equal(root.get("todo_list"), filter.getTodoListId()));
+            predicates.add(cb.equal(root.get("todoList"), filter.getTodoListId()));
 
             String keyword = filter.getKeyword();
             if (keyword != null && !keyword.isEmpty()) {
@@ -63,20 +63,20 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
                 }
             }
 
-            Expression expression;
-            if (filter.getSortBy() != null) {
-                expression = root.get(filter.getSortBy());
-            } else {
-                expression = root.get("name");
-            }
-            Order order;
-            if (filter.getSortDirection().equals("ASC")) {
-                order = cb.asc(expression);
-            } else {
-                order = cb.desc(expression);
-            }
-
-            query.orderBy(order);
+//            Expression expression;
+//            if (filter.getSortBy() != null) {
+//                expression = root.get(filter.getSortBy());
+//            } else {
+//                expression = root.get("name");
+//            }
+//            Order order;
+//            if (filter.getSortDirection().equals("ASC")) {
+//                order = cb.asc(expression);
+//            } else {
+//                order = cb.desc(expression);
+//            }
+//
+//            query.orderBy(order);
             return cb.and(predicates.toArray(new Predicate[] {}));
         };
     }
