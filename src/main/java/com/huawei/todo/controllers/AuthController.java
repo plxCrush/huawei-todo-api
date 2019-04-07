@@ -44,12 +44,8 @@ public class AuthController {
             throw new ApiValidationException(errors);
         }
 
-        if (signUpRequest.getPassword().trim().length() < 8) {
-            throw new ApiException(ApiErrorMessage.PASSWORD_TOO_WEAK);
-        } else if (userService.get(signUpRequest.getUsername()) != null) {
+        if (userService.get(signUpRequest.getUsername()) != null) {
             throw new ApiException(ApiErrorMessage.USERNAME_ALREADY_EXISTS);
-        } else if (isUserNameInvalid(signUpRequest.getUsername())) {
-            throw new ApiException(ApiErrorMessage.USERNAME_CANT_CONTAIN_FORBIDDEN_CHARACTERS);
         } else if (!signUpRequest.getPassword().equals(signUpRequest.getPasswordRepeat())) {
             throw new ApiException(ApiErrorMessage.PASSWORD_DOES_NOT_MATCH_REPEAT);
         }
@@ -68,11 +64,9 @@ public class AuthController {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        // Reload password post-security so we can generate the token
         final JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(user);
 
-        // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(user, token));
     }
 
@@ -99,7 +93,6 @@ public class AuthController {
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity handleAuthenticationException(AuthenticationException e) {
 
-        //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         Map response = new HashMap<>();
         response.put("success", false);
         response.put("errorType", e.getClass());
@@ -121,13 +114,6 @@ public class AuthController {
         catch (BadCredentialsException e) {
             throw new AuthenticationException(ApiErrorMessage.INVALID_USERNAME_OR_PASSWORD);
         }
-    }
-
-    // TODO: Review forbidden characters.
-    private boolean isUserNameInvalid(String username) {
-
-        String[] forbiddenChars = new String[]{" ","!","@","#","$","%","^","&","*","(",")","+","=","{","}","|","<",">","?","/",":",";"};
-        return Arrays.stream(forbiddenChars).parallel().anyMatch(username::contains);
     }
 
 }
