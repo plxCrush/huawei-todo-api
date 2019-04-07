@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +37,8 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
 
             List<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(cb.equal(root.get("todo_list"), filter.getTodoListId()));
+
             String keyword = filter.getKeyword();
             if (keyword != null && !keyword.isEmpty()) {
                 predicates.add(
@@ -59,9 +63,20 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
                 }
             }
 
-            //TODO: Implement order by other parameters.
-            query.orderBy(cb.asc(root.get("name")));
+            Expression expression;
+            if (filter.getSortBy() != null) {
+                expression = root.get(filter.getSortBy());
+            } else {
+                expression = root.get("name");
+            }
+            Order order;
+            if (filter.getSortDirection().equals("ASC")) {
+                order = cb.asc(expression);
+            } else {
+                order = cb.desc(expression);
+            }
 
+            query.orderBy(order);
             return cb.and(predicates.toArray(new Predicate[] {}));
         };
     }
