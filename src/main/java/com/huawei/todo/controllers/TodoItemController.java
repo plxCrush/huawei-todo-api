@@ -162,6 +162,7 @@ public class TodoItemController {
     public ResponseEntity addDependency(@PathVariable long dependencyId, @PathVariable long id) throws ApiException {
 
         TodoItem todoItem = this.dependencyOperation(id, dependencyId, "add");
+        todoItem = todoItemService.save(todoItem);
         return ResponseEntity.ok(new TodoItemDTO(todoItem));
     }
 
@@ -169,6 +170,7 @@ public class TodoItemController {
     public ResponseEntity removeDependency(@PathVariable long dependencyId, @PathVariable long id) throws ApiException {
 
         TodoItem todoItem = this.dependencyOperation(id, dependencyId, "remove");
+        todoItem = todoItemService.save(todoItem);
         return ResponseEntity.ok(new TodoItemDTO(todoItem));
     }
 
