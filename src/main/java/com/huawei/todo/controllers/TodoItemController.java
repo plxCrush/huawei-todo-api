@@ -69,7 +69,7 @@ public class TodoItemController {
 
         User user = this.checkUser(authentication);
 
-        if(user.getId() != todoItem.getTodoList().getId()) {
+        if(user.getId() != todoItem.getTodoList().getUser().getId()) {
             throw new ApiException(ApiErrorMessage.NOT_YOUR_TODOLIST);
         }
 

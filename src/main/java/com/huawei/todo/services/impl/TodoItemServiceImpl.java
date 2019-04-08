@@ -55,13 +55,13 @@ public class TodoItemServiceImpl extends BasicServiceImpl<TodoItem> implements T
             if (expired != null) {
                 if (expired) {
                     predicates.add(cb.and(
-                            cb.greaterThan(root.get("deadline"), new Date()),
+                            cb.lessThan(root.get("deadline"), new Date()),
                             cb.equal(root.get("completed"), false)
                     ));
                 } else {
                     predicates.add(cb.or(
                             cb.isNull(root.get("deadline")),
-                            cb.lessThan(root.get("deadline"), new Date())
+                            cb.greaterThan(root.get("deadline"), new Date())
                     ));
                 }
             }
