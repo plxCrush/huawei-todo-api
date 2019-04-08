@@ -5,6 +5,7 @@ import com.huawei.todo.controllers.exceptions.ApiErrorMessage;
 import com.huawei.todo.controllers.exceptions.ApiException;
 import com.huawei.todo.controllers.exceptions.ApiValidationException;
 import com.huawei.todo.dtos.TodoItemDTO;
+import com.huawei.todo.dtos.TodoItemDetailsDTO;
 import com.huawei.todo.dtos.TodoItemFilter;
 import com.huawei.todo.models.TodoItem;
 import com.huawei.todo.models.TodoList;
@@ -105,7 +106,7 @@ public class TodoItemController {
         List<TodoItem> todoItems = todoItemService.search(filter);
         return ResponseEntity.ok(
                 todoItems.stream()
-                        .map(TodoItemDTO::new)
+                        .map(TodoItemDetailsDTO::new)
                         .toArray()
         );
     }
@@ -114,11 +115,11 @@ public class TodoItemController {
     public ResponseEntity get(@PathVariable long id) {
 
         TodoItem todoItem = todoItemService.get(id);
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody TodoItemDTO dto, Errors errors, Authentication authentication) throws ApiException {
+    public ResponseEntity create(@Valid @RequestBody TodoItemDetailsDTO dto, Errors errors, Authentication authentication) throws ApiException {
 
         if (errors.hasErrors()) {
             throw new ApiValidationException(errors);
@@ -142,11 +143,11 @@ public class TodoItemController {
         todoItem.setDeadline(dto.getDeadline());
         todoItem = todoItemService.save(todoItem);
 
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity update(@Valid @RequestBody TodoItemDTO dto, @PathVariable long id, Errors errors) throws ApiException {
+    public ResponseEntity update(@Valid @RequestBody TodoItemDetailsDTO dto, @PathVariable long id, Errors errors) throws ApiException {
 
         if (errors.hasErrors()) {
             throw new ApiValidationException(errors);
@@ -162,7 +163,7 @@ public class TodoItemController {
         todoItem.setDeadline(dto.getDeadline());
         todoItem = todoItemService.save(todoItem);
 
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
     @DeleteMapping("{id}")
@@ -179,7 +180,7 @@ public class TodoItemController {
 
         TodoItem todoItem = this.dependencyOperation(id, dependencyId, authentication, "add");
         todoItem = todoItemService.save(todoItem);
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
     @DeleteMapping("{id}/removeDependency/{dependencyId}")
@@ -187,7 +188,7 @@ public class TodoItemController {
 
         TodoItem todoItem = this.dependencyOperation(id, dependencyId, authentication, "remove");
         todoItem = todoItemService.save(todoItem);
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
     @PutMapping("{id}/markAsCompleted")
@@ -208,7 +209,7 @@ public class TodoItemController {
         todoItem.setCompleted(true);
         todoItem = todoItemService.save(todoItem);
 
-        return ResponseEntity.ok(new TodoItemDTO(todoItem));
+        return ResponseEntity.ok(new TodoItemDetailsDTO(todoItem));
     }
 
 }
