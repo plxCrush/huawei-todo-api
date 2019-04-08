@@ -51,7 +51,7 @@ public class TodoItemController {
         }
     }
 
-    private TodoItem dependencyOperation(long id, long dependencyId, String operation) throws ApiException {
+    private TodoItem dependencyOperation(long id, long dependencyId, Authentication authentication, String operation) throws ApiException {
 
         TodoItem todoItem = todoItemService.get(id);
         if (todoItem == null) {
@@ -61,6 +61,16 @@ public class TodoItemController {
         TodoItem dependency = todoItemService.get(dependencyId);
         if (dependency == null) {
             throw new ApiException(ApiErrorMessage.TODOITEM_NOT_FOUND);
+        }
+
+        if (dependency.getTodoList().getId() != todoItem.getTodoList().getId()) {
+            throw new ApiException(ApiErrorMessage.ITEMS_ARE_NOT_IN_THE_SAME_LIST);
+        }
+
+        User user = this.checkUser(authentication);
+
+        if(user.getId() != todoItem.getTodoList().getId()) {
+            throw new ApiException(ApiErrorMessage.NOT_YOUR_TODOLIST);
         }
 
         List<TodoItem> dependencies = todoItem.getDependencies();
@@ -108,7 +118,7 @@ public class TodoItemController {
     }
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody TodoItemDTO dto, Errors errors) throws ApiException {
+    public ResponseEntity create(@Valid @RequestBody TodoItemDTO dto, Errors errors, Authentication authentication) throws ApiException {
 
         if (errors.hasErrors()) {
             throw new ApiValidationException(errors);
@@ -117,6 +127,12 @@ public class TodoItemController {
         TodoList todoList = todoListService.get(dto.getTodoListId());
         if (todoList == null) {
             throw new ApiException(ApiErrorMessage.TODOLIST_NOT_FOUND);
+        }
+
+        User user = this.checkUser(authentication);
+
+        if (user.getId() != todoList.getUser().getId()) {
+            throw new ApiException(ApiErrorMessage.NOT_YOUR_TODOLIST);
         }
 
         TodoItem todoItem = new TodoItem();
@@ -159,17 +175,17 @@ public class TodoItemController {
     }
 
     @PutMapping("{id}/addDependency/{dependencyId}")
-    public ResponseEntity addDependency(@PathVariable long dependencyId, @PathVariable long id) throws ApiException {
+    public ResponseEntity addDependency(@PathVariable long dependencyId, @PathVariable long id, Authentication authentication) throws ApiException {
 
-        TodoItem todoItem = this.dependencyOperation(id, dependencyId, "add");
+        TodoItem todoItem = this.dependencyOperation(id, dependencyId, authentication, "add");
         todoItem = todoItemService.save(todoItem);
         return ResponseEntity.ok(new TodoItemDTO(todoItem));
     }
 
     @DeleteMapping("{id}/removeDependency/{dependencyId}")
-    public ResponseEntity removeDependency(@PathVariable long dependencyId, @PathVariable long id) throws ApiException {
+    public ResponseEntity removeDependency(@PathVariable long dependencyId, @PathVariable long id, Authentication authentication) throws ApiException {
 
-        TodoItem todoItem = this.dependencyOperation(id, dependencyId, "remove");
+        TodoItem todoItem = this.dependencyOperation(id, dependencyId, authentication, "remove");
         todoItem = todoItemService.save(todoItem);
         return ResponseEntity.ok(new TodoItemDTO(todoItem));
     }

@@ -19,6 +19,7 @@ public enum ApiErrorMessage {
     TODOITEM_NOT_FOUND("Todo item not found."),
     USER_NOT_FOUND("User not found."),
     TODOITEM_HAVE_INCOMPLETED_DEPENDENCIES("Todo item have unmet dependencies."),
+    ITEMS_ARE_NOT_IN_THE_SAME_LIST("To-do items are not in the same list."),
     NOT_YOUR_TODOLIST("Not authorized");
 
     String text;
